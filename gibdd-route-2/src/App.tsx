@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import PointForm from "./components/PointForm";
+import PointDetails from "./components/PointDetails";
 import TrainingMode from "./components/TrainingMode";
 import { getStoredPoints, setStoredPoints } from "./storage/pointsStorage";
 import type { RoutePoint, RoutePointType } from "./types";
@@ -9,6 +10,7 @@ import type { RoutePoint, RoutePointType } from "./types";
 export default function App() {
   const [points, setPoints] = useState<RoutePoint[]>(getStoredPoints);
   const [selectedPoint, setSelectedPoint] = useState<RoutePoint | null>(null);
+  const [viewingPoint, setViewingPoint] = useState<RoutePoint | null>(null);
   const [editingPoint, setEditingPoint] = useState<RoutePoint | null>(null);
   const [draftLocation, setDraftLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedType, setSelectedType] = useState<RoutePointType | "all">("all");
@@ -32,6 +34,7 @@ export default function App() {
   const handleMapClick = (lat: number, lng: number) => {
     setDraftLocation({ lat, lng });
     setEditingPoint(null);
+    setViewingPoint(null);
   };
 
   const handleSavePoint = (point: RoutePoint) => {
@@ -45,6 +48,7 @@ export default function App() {
     setDraftLocation(null);
     setEditingPoint(null);
     setSelectedPoint(point);
+    setViewingPoint(point);
   };
 
   const handleDeletePoint = (id: string) => {
@@ -63,14 +67,22 @@ export default function App() {
     if (editingPoint?.id === id) {
       setEditingPoint(null);
     }
+
+    if (viewingPoint?.id === id) {
+      setViewingPoint(null);
+    }
   };
 
   const handleSelectPoint = (point: RoutePoint) => {
     setSelectedPoint(point);
+    setViewingPoint(point);
+    setEditingPoint(null);
+    setDraftLocation(null);
   };
 
   const handleEditPoint = (point: RoutePoint) => {
     setEditingPoint(point);
+    setViewingPoint(null);
     setDraftLocation(null);
     setSelectedPoint(point);
   };
@@ -78,6 +90,10 @@ export default function App() {
   const closeForm = () => {
     setEditingPoint(null);
     setDraftLocation(null);
+  };
+
+  const closeDetails = () => {
+    setViewingPoint(null);
   };
 
   return (
@@ -100,6 +116,7 @@ export default function App() {
           selectedPoint={selectedPoint}
           draftLocation={draftLocation}
           onMapClick={handleMapClick}
+          onSelectPoint={handleSelectPoint}
           onEditPoint={handleEditPoint}
         />
 
@@ -112,6 +129,15 @@ export default function App() {
               onCancel={closeForm}
             />
           </div>
+        )}
+
+        {viewingPoint && (
+          <PointDetails
+            point={viewingPoint}
+            onClose={closeDetails}
+            onEdit={handleEditPoint}
+            onDelete={handleDeletePoint}
+          />
         )}
       </main>
 

@@ -324,3 +324,66 @@ label {
   padding: 7px 10px;
   font-size: 13px;
 }
+
+.details-drawer {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  width: 520px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+  padding: 18px;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.details-label {
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.details-title {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.details-section {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.details-section-title {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.details-text {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.details-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.danger-button {
+  background: #dc2626;
+  color: white;
+}

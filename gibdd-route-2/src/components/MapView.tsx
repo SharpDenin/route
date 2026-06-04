@@ -11,6 +11,7 @@ type Props = {
   selectedPoint: RoutePoint | null;
   draftLocation: { lat: number; lng: number } | null;
   onMapClick: (lat: number, lng: number) => void;
+  onSelectPoint: (point: RoutePoint) => void;
   onEditPoint: (point: RoutePoint) => void;
 };
 
@@ -46,7 +47,14 @@ function FocusPoint({ point }: { point: RoutePoint | null }) {
   return null;
 }
 
-export default function MapView({ points, selectedPoint, draftLocation, onMapClick, onEditPoint }: Props) {
+export default function MapView({
+  points,
+  selectedPoint,
+  draftLocation,
+  onMapClick,
+  onSelectPoint,
+  onEditPoint,
+}: Props) {
   const [roadRoute, setRoadRoute] = useState<[number, number][]>(route2Coordinates);
 
   useEffect(() => {
@@ -61,12 +69,20 @@ export default function MapView({ points, selectedPoint, draftLocation, onMapCli
         <Polyline positions={roadRoute} pathOptions={{ weight: 6 }} />
 
         {points.map((point) => (
-          <Marker key={point.id} position={[point.lat, point.lng]} icon={markerIcon}>
+          <Marker
+            key={point.id}
+            position={[point.lat, point.lng]}
+            icon={markerIcon}
+            eventHandlers={{
+              click: () => onSelectPoint(point),
+            }}
+          >
             <Popup>
               <div className="popup-content">
                 <b>{point.title}</b>
                 <span>{getPointTypeLabel(point.type)}</span>
                 <span>Сложность: {point.difficulty}/5</span>
+                <button onClick={() => onSelectPoint(point)}>Открыть</button>
                 <button onClick={() => onEditPoint(point)}>Редактировать</button>
               </div>
             </Popup>
