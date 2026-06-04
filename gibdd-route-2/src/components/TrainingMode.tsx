@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import type { RoutePoint } from "../types";
 import { getPointTypeLabel } from "../data/pointTypes";
 
@@ -21,9 +21,22 @@ export default function TrainingMode({ points, onClose, onSelectPoint }: Props) 
     setIndex((current) => Math.min(current + 1, points.length - 1));
   };
 
+  const handleOverlayClick = () => {
+    onClose();
+  };
+
+  const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
+
+  const handleShowOnMap = () => {
+    onSelectPoint(point);
+    onClose();
+  };
+
   return (
-    <div className="training-overlay">
-      <div className="training-card">
+    <div className="training-overlay" onClick={handleOverlayClick}>
+      <div className="training-card" onClick={handleCardClick}>
         <div className="training-header">
           <div>
             <div className="training-counter">
@@ -84,7 +97,7 @@ export default function TrainingMode({ points, onClose, onSelectPoint }: Props) 
           <button className="secondary-button" disabled={index === 0} onClick={prev}>
             Назад
           </button>
-          <button onClick={() => onSelectPoint(point)}>Показать на карте</button>
+          <button onClick={handleShowOnMap}>Показать на карте</button>
           <button className="secondary-button" disabled={index === points.length - 1} onClick={next}>
             Дальше
           </button>
