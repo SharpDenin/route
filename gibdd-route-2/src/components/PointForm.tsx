@@ -9,12 +9,32 @@ type Props = {
   onCancel: () => void;
 };
 
+const readFiles = async (files: FileList | null): Promise<string[]> => {
+  if (!files) {
+    return [];
+  }
+
+  return Promise.all(
+    Array.from(files).map((file) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    })
+  );
+};
+
 export default function PointForm({ point, draftLocation, onSave, onCancel }: Props) {
   const [title, setTitle] = useState("");
   const [type, setType] = useState<RoutePointType>("custom");
   const [correctAction, setCorrectAction] = useState("");
+  const [correctActionImages, setCorrectActionImages] = useState<string[]>([]);
   const [commonMistakes, setCommonMistakes] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionImages, setDescriptionImages] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<1 | 2 | 3 | 4 | 5>(3);
 
   useEffect(() => {
@@ -22,8 +42,10 @@ export default function PointForm({ point, draftLocation, onSave, onCancel }: Pr
       setTitle(point.title);
       setType(point.type);
       setCorrectAction(point.correctAction);
+      setCorrectActionImages(point.correctActionImages ?? []);
       setCommonMistakes(point.commonMistakes);
       setDescription(point.description);
+      setDescriptionImages(point.descriptionImages ?? []);
       setDifficulty(point.difficulty);
       return;
     }
@@ -31,8 +53,10 @@ export default function PointForm({ point, draftLocation, onSave, onCancel }: Pr
     setTitle("");
     setType("custom");
     setCorrectAction("");
+    setCorrectActionImages([]);
     setCommonMistakes("");
     setDescription("");
+    setDescriptionImages([]);
     setDifficulty(3);
   }, [point, draftLocation]);
 
@@ -52,11 +76,23 @@ export default function PointForm({ point, draftLocation, onSave, onCancel }: Pr
       title: title.trim() || "Без названия",
       type,
       correctAction,
+      correctActionImages,
       commonMistakes,
       description,
+      descriptionImages,
       difficulty,
       createdAt: point?.createdAt ?? new Date().toISOString(),
     });
+  };
+
+  const addCorrectActionImages = async (files: FileList | null) => {
+    const images = await readFiles(files);
+    setCorrectActionImages((current) => [...current, ...images]);
+  };
+
+  const addDescriptionImages = async (files: FileList | null) => {
+    const images = await readFiles(files);
+    setDescriptionImages((current) => [...current, ...images]);
   };
 
   return (
@@ -85,6 +121,24 @@ export default function PointForm({ point, draftLocation, onSave, onCancel }: Pr
       </label>
 
       <label>
+        Фото к правильному выполнению
+        <input type="file" accept="image/*" multiple onChange={(event) => addCorrectActionImages(event.target.files)} />
+      </label>
+
+      {correctActionImages.length > 0 && (
+        <div className="image-grid">
+          {correctActionImages.map((image, index) => (
+            <div className="image-preview" key={image}>
+              <img src={image} />
+              <button type="button" onClick={() => setCorrectActionImages((items) => items.filter((_, itemIndex) => itemIndex !== index))}>
+                Удалить
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <label>
         Типичные ошибки
         <textarea value={commonMistakes} onChange={(event) => setCommonMistakes(event.target.value)} />
       </label>
@@ -93,6 +147,24 @@ export default function PointForm({ point, draftLocation, onSave, onCancel }: Pr
         Описание
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} />
       </label>
+
+      <label>
+        Фото к описанию
+        <input type="file" accept="image/*" multiple onChange={(event) => addDescriptionImages(event.target.files)} />
+      </label>
+
+      {descriptionImages.length > 0 && (
+        <div className="image-grid">
+          {descriptionImages.map((image, index) => (
+            <div className="image-preview" key={image}>
+              <img src={image} />
+              <button type="button" onClick={() => setDescriptionImages((items) => items.filter((_, itemIndex) => itemIndex !== index))}>
+                Удалить
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <label>
         Сложность

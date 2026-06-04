@@ -51,6 +51,14 @@ export default function TrainingMode({ points, onClose, onSelectPoint }: Props) 
           <div className="info-block">
             <b>Правильное выполнение</b>
             <p>{point.correctAction || "Не заполнено"}</p>
+
+            {(point.correctActionImages ?? []).length > 0 && (
+              <div className="image-grid large">
+                {point.correctActionImages.map((image) => (
+                  <img src={image} key={image} />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="info-block">
@@ -61,6 +69,14 @@ export default function TrainingMode({ points, onClose, onSelectPoint }: Props) 
           <div className="info-block">
             <b>Описание</b>
             <p>{point.description || "Не заполнено"}</p>
+
+            {(point.descriptionImages ?? []).length > 0 && (
+              <div className="image-grid large">
+                {point.descriptionImages.map((image) => (
+                  <img src={image} key={image} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

@@ -285,3 +285,42 @@ label {
   gap: 12px;
   margin-top: 20px;
 }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.image-grid.large {
+  margin-top: 12px;
+}
+
+.image-grid.large img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+.image-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.image-preview button {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 7px 10px;
+  font-size: 13px;
+}

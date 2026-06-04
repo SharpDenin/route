@@ -1,8 +1,10 @@
 import L from "leaflet";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { route2Coordinates } from "../data/route2";
 import type { RoutePoint } from "../types";
 import { getPointTypeLabel } from "../data/pointTypes";
+import { getRoadRoute } from "../services/routeService";
+import { route2Coordinates } from "../data/route2";
 
 type Props = {
   points: RoutePoint[];
@@ -35,23 +37,28 @@ function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) =
 function FocusPoint({ point }: { point: RoutePoint | null }) {
   const map = useMap();
 
-  if (point) {
-    map.flyTo([point.lat, point.lng], 17);
-  }
+  useEffect(() => {
+    if (point) {
+      map.flyTo([point.lat, point.lng], 17);
+    }
+  }, [map, point]);
 
   return null;
 }
 
 export default function MapView({ points, selectedPoint, draftLocation, onMapClick, onEditPoint }: Props) {
+  const [roadRoute, setRoadRoute] = useState<[number, number][]>(route2Coordinates);
+
+  useEffect(() => {
+    getRoadRoute().then(setRoadRoute);
+  }, []);
+
   return (
     <div className="map-wrapper">
       <MapContainer center={[55.9962, 93.0177]} zoom={14} className="map">
-        <TileLayer
-          attribution="OpenStreetMap"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <TileLayer attribution="OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        <Polyline positions={route2Coordinates} pathOptions={{ weight: 6 }} />
+        <Polyline positions={roadRoute} pathOptions={{ weight: 6 }} />
 
         {points.map((point) => (
           <Marker key={point.id} position={[point.lat, point.lng]} icon={markerIcon}>

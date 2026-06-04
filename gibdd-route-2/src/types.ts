@@ -27,8 +27,10 @@ export type RoutePoint = {
   title: string;
   type: RoutePointType;
   correctAction: string;
+  correctActionImages: string[];
   commonMistakes: string;
   description: string;
+  descriptionImages: string[];
   difficulty: 1 | 2 | 3 | 4 | 5;
   createdAt: string;
 };
